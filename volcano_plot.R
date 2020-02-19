@@ -11,11 +11,13 @@ suppressMessages({
 
 argv <- arg_parser(description = 'the volcano plot', name = 'volcano')
 argv <- add_argument(argv,"--deg", help="the differentially expressed genes file")
+argv <- add_argument(argv,"--labeln", help="the number of labels each", default=10)
 argv <- add_argument(argv,"--name", help="the sample name")
 argv <- add_argument(argv,"--outdir", help="the output directory")
 argv <- parse_args(argv)
 
 difgenes <- argv$deg
+labeln <- as.numeric(argv$labeln)
 name <- argv$name
 outdir <- argv$outdir
 
@@ -27,15 +29,15 @@ difgenes$group[which((difgenes$avg_logFC>0) &  (difgenes$pct.1 > difgenes$pct.2)
 difgenes$group[which((difgenes$avg_logFC<0) &  (difgenes$pct.1 < difgenes$pct.2))] = 'down-regulated'
 difgenes$dif2 = abs(difgenes$pct.1 - difgenes$pct.2)
 
-# top 10 labels
+# top n labels
 difgenes$Label = ''
 difgenes = difgenes[order(difgenes$avg_logFC),]
 #upgenes = tail(difgenes$symbol[which(difgenes$group == 'up-regulated')], 10)
-upgenes = tail(difgenes$symbol, 10)
-downgenes = head(difgenes$symbol, 10)
+upgenes = tail(difgenes$symbol, labeln)
+downgenes = head(difgenes$symbol, labeln)
 #downgenes2 = head(difgenes$symbol[which(difgenes$group == 'down-regulated')], 10)
-degtop10 = c(upgenes, downgenes)
-difgenes$Label[match(degtop10, difgenes$symbol)] = degtop10
+degtopn = c(upgenes, downgenes)
+difgenes$Label[match(degtopn, difgenes$symbol)] = degtopn
 
 
 ##plot
